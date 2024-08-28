@@ -1,8 +1,13 @@
 package routes
 
 import (
+	"context"
+	"log"
 	"net/http"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"trainer.seanrkelman.com/backend/server"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,12 +21,29 @@ type Activity struct {
 	Date     time.Time `json:"date"`
 }
 
-var activities = []Activity{
-	{ID: "1", Title: "Blue Train", Athlete: "John Coltrane", Distance: 56.99, Time: 56.99, Date: time.Now()},
-	{ID: "2", Title: "Jeru", Athlete: "Gerry Mulligan", Distance: 17.99, Time: 56.99, Date: time.Now()},
-	{ID: "3", Title: "Sarah Vaughan and Clifford Brown", Athlete: "Sarah Vaughan", Distance: 39.99, Time: 56.99, Date: time.Now()},
+func GetActivities(c *gin.Context) {
+	cursor, error := server.GetMongoClient().Database("trainer").Collection("activities").Find(context.TODO(), bson.D{{}})
+	if error != nil {
+		log.Fatal(error)
+	}
+	var activities []Activity
+	if err := cursor.All(context.TODO(), &activities); err != nil {
+		log.Fatal(err)
+	}
+	c.IndentedJSON(http.StatusOK, activities)
 }
 
-func GetActivities(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, activities)
+func CreateActivity(c *gin.Context) {
+	var activity Activity
+	if err := c.BindJSON(&activity); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	activity.Date = time.Now()
+	_, err := server.GetMongoClient().Database("trainer").Collection("activities").InsertOne(context.TODO(), activity)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	c.Status(http.StatusCreated)
 }
