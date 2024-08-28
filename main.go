@@ -11,5 +11,8 @@ func main() {
 	router := gin.Default()
 	router.GET("/activities", routes.GetActivities)
 	router.POST("/activities", routes.CreateActivity)
+	router.GET("/activities/:id", routes.GetActivityByID)
+	router.PUT("/activities/:id", routes.UpdateActivity)
+	router.DELETE("/activities/:id", routes.DeleteActivity)
 	router.Run("localhost:8080")
 }
