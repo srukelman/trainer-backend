@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"trainer.seanrkelman.com/backend/server"
 
 	"github.com/gin-gonic/gin"
@@ -54,6 +55,18 @@ func GetActivitiesByAthlete(c *gin.Context) {
 		log.Fatal(err)
 	}
 	c.IndentedJSON(http.StatusOK, activities)
+}
+
+func GetMostRecentActivity(c *gin.Context) {
+	athlete := c.Param("athlete")
+	queryOptions := options.FindOne()
+	queryOptions.SetSort(bson.D{{Key: "date", Value: -1}})
+	var activity Activity
+	err := server.GetMongoClient().Database("trainer").Collection("activities").FindOne(context.TODO(), bson.D{{Key: "athlete", Value: athlete}}, queryOptions).Decode(&activity)
+	if err != nil {
+		log.Fatal(err)
+	}
+	c.IndentedJSON(http.StatusOK, activity)
 }
 
 func CreateActivity(c *gin.Context) {

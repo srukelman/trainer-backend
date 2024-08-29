@@ -16,9 +16,10 @@ func main() {
 		AllowHeaders: []string{"Content-Type"},
 	}))
 	router.GET("/activities", routes.GetActivities)
-	router.POST("/activities", routes.CreateActivity)
 	router.GET("/activities/:id", routes.GetActivityByID)
 	router.GET("/activities/athlete/:athlete", routes.GetActivitiesByAthlete)
+	router.GET("/activities/most-recent/:athlete", routes.GetMostRecentActivity)
+	router.POST("/activities", routes.CreateActivity)
 	router.PUT("/activities/:id", routes.UpdateActivity)
 	router.DELETE("/activities/:id", routes.DeleteActivity)
 	router.Run("localhost:8080")
