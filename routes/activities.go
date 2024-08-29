@@ -43,19 +43,37 @@ func GetActivityByID(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, activity)
 }
 
+func GetActivitiesByAthlete(c *gin.Context) {
+	athlete := c.Param("athlete")
+	cursor, error := server.GetMongoClient().Database("trainer").Collection("activities").Find(context.TODO(), bson.D{{Key: "athlete", Value: athlete}})
+	if error != nil {
+		log.Fatal(error)
+	}
+	var activities []Activity
+	if err := cursor.All(context.TODO(), &activities); err != nil {
+		log.Fatal(err)
+	}
+	c.IndentedJSON(http.StatusOK, activities)
+}
+
 func CreateActivity(c *gin.Context) {
 	var activity Activity
 	if err := c.BindJSON(&activity); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	activity.Date = time.Now()
-	_, err := server.GetMongoClient().Database("trainer").Collection("activities").InsertOne(context.TODO(), activity)
-	if err != nil {
-		log.Fatal(err)
+	var activityExists Activity
+	_ = server.GetMongoClient().Database("trainer").Collection("activities").FindOne(context.TODO(), bson.D{{Key: "id", Value: activity.ID}}).Decode(&activityExists)
+	if activityExists.ID != activity.ID {
+		_, err := server.GetMongoClient().Database("trainer").Collection("activities").InsertOne(context.TODO(), activity)
+		if err != nil {
+			log.Fatal(err)
+		}
+		c.IndentedJSON(http.StatusCreated, activity)
+	} else {
+		c.IndentedJSON(http.StatusOK, activity)
 	}
 
-	c.Status(http.StatusCreated)
 }
 
 func UpdateActivity(c *gin.Context) {
