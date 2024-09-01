@@ -40,6 +40,7 @@ func main() {
 	router.PUT("/activities/:id", routes.UpdateActivity)
 	router.DELETE("/activities/:id", routes.DeleteActivity)
 	router.GET("/workouts", routes.GetWorkouts)
+	router.GET("/workouts/athlete/:athlete", routes.GetWorkoutsByAthlete)
 	router.POST("/workouts", routes.CreateWorkout)
 	router.Run("localhost:8080")
 }

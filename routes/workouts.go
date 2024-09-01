@@ -43,6 +43,21 @@ func GetWorkouts(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, workouts)
 }
 
+func GetWorkoutsByAthlete(c *gin.Context) {
+	athlete := c.Param("athlete")
+	cursor, err := server.GetMongoClient().Database("trainer").Collection("workouts").Find(context.TODO(), bson.D{{Key: "athlete", Value: athlete}})
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	var workouts []Workout
+	if err := cursor.All(context.TODO(), &workouts); err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.IndentedJSON(http.StatusOK, workouts)
+}
+
 func CreateWorkout(c *gin.Context) {
 	var workout Workout
 	if err := c.BindJSON(&workout); err != nil {
