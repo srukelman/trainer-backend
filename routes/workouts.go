@@ -14,6 +14,7 @@ type Interval struct {
 	Distance float64 `json:"distance"`
 	Time     float64 `json:"time"`
 	RestTime float64 `json:"restTime"`
+	Reps     int32   `json:"reps"`
 }
 
 type Fartlek struct {
