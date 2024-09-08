@@ -33,8 +33,8 @@ type Workout struct {
 	ID        int64      `json:"id"`
 	Title     string     `json:"title"`
 	Athlete   string     `json:"athlete"`
-	Distance  float64    `json:"distance"`
-	Time      float64    `json:"time"`
+	Distance  int32      `json:"distance"`
+	Time      int32      `json:"time"`
 	Date      time.Time  `json:"date"`
 	Type      string     `json:"type"`
 	Intervals []Interval `json:"intervals"`
