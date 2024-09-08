@@ -20,12 +20,13 @@ type Interval struct {
 type Fartlek struct {
 	Time     float64 `json:"time"`
 	RestTime float64 `json:"restTime"`
-	Pace     float64 `json:"pace"`
+	Reps     int32   `json:"reps"`
 }
 
 type Tempo struct {
 	Time float64 `json:"time"`
 	Pace float64 `json:"pace"`
+	Reps int32   `json:"reps"`
 }
 
 type Workout struct {
@@ -38,7 +39,7 @@ type Workout struct {
 	Type      string     `json:"type"`
 	Intervals []Interval `json:"intervals"`
 	Fartleks  []Fartlek  `json:"fartleks"`
-	Tempo     Tempo      `json:"tempo"`
+	Tempo     []Tempo    `json:"tempo"`
 }
 
 func GetWorkouts(c *gin.Context) {
